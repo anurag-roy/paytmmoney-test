@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "main": "tsx main.ts"
+    "login": "tsx login.ts"
   },
   "keywords": [],
   "author": "Anurag Roy <anuragroy@duck.com> (https://anuragroy.dev/)",

@@ -1,0 +1,18 @@
+{
+  "name": "paytmmoney-test",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "main": "tsx main.ts"
+  },
+  "keywords": [],
+  "author": "Anurag Roy <anuragroy@duck.com> (https://anuragroy.dev/)",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^18.11.18",
+    "tsx": "^3.12.2",
+    "typescript": "^4.9.4"
+  }
+}

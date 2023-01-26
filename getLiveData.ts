@@ -9,15 +9,13 @@ import {
 } from './processTickData.js';
 import token from './token.json';
 
-type Preference = {
+const preferences: {
   actionType: 'ADD' | 'REMOVE';
   modeType: 'LTP' | 'QUOTE' | 'FULL';
   scripType: 'INDEX' | 'EQUITY' | 'ETF' | 'FUTURE' | 'OPTION';
   exchangeType: 'BSE' | 'NSE';
   scripId: string;
-};
-
-const preferences: Preference[] = [
+}[] = [
   {
     actionType: 'ADD',
     modeType: 'LTP',

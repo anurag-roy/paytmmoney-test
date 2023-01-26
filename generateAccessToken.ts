@@ -1,3 +1,12 @@
+export type AccessTokenResponse = {
+  merchant_id: string;
+  channel_id: string;
+  api_key: string;
+  access_token: string;
+  public_access_token: string;
+  read_access_token: string;
+};
+
 export const generateAccessToken = async (
   apiKey: string,
   apiSecret: string,
@@ -18,8 +27,9 @@ export const generateAccessToken = async (
   });
   const response = await res.json();
   if (res.ok) {
-    return response.access_token;
+    return response as AccessTokenResponse;
   } else {
-    throw new Error(response);
+    console.error(response);
+    throw new Error(response?.message);
   }
 };

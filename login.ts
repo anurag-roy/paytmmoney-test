@@ -1,36 +1,54 @@
 import { writeFileSync } from 'node:fs';
-import { createServer } from 'node:http';
+import { stdin as input, stdout as output } from 'node:process';
+import * as readline from 'node:readline/promises';
 import env from './env.json';
 import { generateAccessToken } from './generateAccessToken.js';
 
-const loginUrl = `https://login.paytmmoney.com/merchant-login?apiKey=${env.API_KEY}`;
+const LOGIN_URL = `https://login.paytmmoney.com/merchant-login?apiKey=${env.API_KEY}&state=${env.STATE_KEY}`;
 
-const server = createServer(async (req, res) => {
-  const url = new URL(`http://localhost:${env.PORT}${req.url}`);
-  const requestToken = url.searchParams.get('request_token');
+const rl = readline.createInterface({ input, output });
 
-  if (requestToken) {
-    try {
-      const accessToken = await generateAccessToken(
-        env.API_KEY,
-        env.API_SECRET,
-        requestToken
-      );
-      writeFileSync('accessToken.txt', accessToken, 'utf-8');
+const question = [
+  'Please open this URL in your browser to login:',
+  LOGIN_URL,
+  '',
+  'After successful login, please copy and paste the URL here:',
+  '',
+].join('\n');
+const pastedUrl = await rl.question(question);
 
-      res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end('<h1>Successfully logged in!</h1>');
-    } catch (error) {
-      console.error('Failed to generate access token :', error);
+let requestToken: string | null;
 
-      res.writeHead(500, { 'Content-Type': 'text/html' });
-      res.end('<h1>Login failed</h1>');
-    } finally {
-      server.close();
-    }
+try {
+  const url = new URL(pastedUrl);
+  requestToken = url.searchParams.get('requestToken');
+  if (!requestToken) {
+    console.error(
+      'Request token missing in URL! Make sure you have pasted the correct URL. Exiting...'
+    );
+    process.exit(1);
   }
-});
+} catch (error) {
+  console.error('Invalid URL! Exiting...');
+  process.exit(1);
+}
 
-server.listen(env.PORT);
+try {
+  const accessTokenResponse = await generateAccessToken(
+    env.API_KEY,
+    env.API_SECRET,
+    requestToken
+  );
+  writeFileSync(
+    'token.json',
+    JSON.stringify(accessTokenResponse, null, 4),
+    'utf-8'
+  );
 
-console.log('Please open this URL in your browser to login:' + '\n' + loginUrl);
+  console.log('Successfully logged in!');
+} catch (error) {
+  console.error('Failed to generate access token :', error);
+  console.log('Login failed');
+} finally {
+  rl.close();
+}
